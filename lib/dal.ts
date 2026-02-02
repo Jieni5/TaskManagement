@@ -4,8 +4,10 @@ import { eq } from 'drizzle-orm'
 import { cache } from 'react'
 import { issues, users } from '@/db/schema'
 import { mockDelay } from './utils'
+import { unstable_cacheTag as cacheTag, unstable_cacheLife as cacheLife } from 'next/cache'
 
-export const getCurrentUser = async () => {
+export const getCurrentUser = cache(async () => {
+    console.log("get current user called")
     await mockDelay(1000) 
     const session = await getSession()
     if (!session) {
@@ -21,7 +23,7 @@ export const getCurrentUser = async () => {
         console.error(error)
         return null
     }
-}
+})
 
 export const getUserByEmail = async (email: string) => {
     try{
@@ -37,6 +39,8 @@ export const getUserByEmail = async (email: string) => {
 }
 
 export async function getIssues() {
+  'use cache'
+  cacheTag('issues')
   try {
     await mockDelay(1000) // Simulate network delay
     const result = await db.query.issues.findMany({
@@ -45,9 +49,22 @@ export async function getIssues() {
       },
       orderBy: (issues, { desc }) => [desc(issues.createdAt)],
     })
+    cacheLife('weeks')
     return result
   } catch (error) {
     console.error('Error fetching issues:', error)
     throw new Error('Failed to fetch issues')
   }
+}
+
+export const getIssue = async(id:number) =>{
+  await mockDelay(1000)
+  try{
+    const issue = await db.query.issues.findFirst({where: eq(issues.id, id), with:{user:true}})
+    return issue
+  }catch(error){
+    console.error(error)
+    return null
+  }
+  
 }
