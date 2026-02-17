@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm'
 import { cache } from 'react'
 import { issues, users } from '@/db/schema'
 import { mockDelay } from './utils'
-import { unstable_cacheTag as cacheTag, unstable_cacheLife as cacheLife } from 'next/cache'
+import { cacheTag, cacheLife } from 'next/cache'
 
 export const getCurrentUser = cache(async () => {
     console.log("get current user called")
