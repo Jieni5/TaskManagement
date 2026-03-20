@@ -1,18 +1,14 @@
 import type { NextConfig } from 'next'
 
-const nextConfig: NextConfig = {
-  experimental: {
-    dynamicIO: true,
-    cacheComponents: true,
-  },
+const nextConfig = {
+  cacheComponents: true,
   // ignore ts errors
   typescript: {
     ignoreBuildErrors: true,
   },
-  // ignore eslint errors
   eslint: {
     ignoreDuringBuilds: true,
   },
-}
+} as NextConfig
 
 export default nextConfig

@@ -4,10 +4,10 @@ import { neon } from '@neondatabase/serverless'
 
 import * as schema from './schema'
 
-export const db = process.env.VERCEL
-  ? drizzleNeon({
-      client: neon(process.env.DATABASE_URL!),
-      schema,
-      casing: 'snake_case',
-    })
+const isNeon = process.env.DATABASE_URL?.includes('neon.tech')
+console.log('Using driver:', isNeon ? 'neon-http' : 'postgres')
+
+export const db = isNeon
+  ? drizzleNeon({ client: neon(process.env.DATABASE_URL!), schema, casing: 'snake_case' })
   : drizzlePostgres(process.env.DATABASE_URL!, { schema, casing: 'snake_case' })
+

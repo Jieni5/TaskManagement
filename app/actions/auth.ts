@@ -156,6 +156,6 @@ export const signOut = async () => {
     throw e
   }
   finally{
-    redirect('/auth/signin')
+    redirect('/signin')
   }
 }
