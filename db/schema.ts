@@ -17,6 +17,7 @@ export const issues = pgTable('issues', {
   description: text('description'),
   status: statusEnum('status').default('backlog').notNull(),
   priority: priorityEnum('priority').default('medium').notNull(),
+  dueDate: timestamp('due_date'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   userId: text('user_id').notNull(),

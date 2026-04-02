@@ -5,7 +5,7 @@ import { issues } from '@/db/schema'
 import { eq } from 'drizzle-orm'
 import { getCurrentUser } from '@/lib/dal'
 import { z } from 'zod'
-import { mockDelay } from '@/lib/utils'
+
 import { revalidateTag } from 'next/cache';
 
 // Define Zod schema for issue validation
@@ -25,6 +25,7 @@ const IssueSchema = z.object({
     errorMap: () => ({ message: 'Please select a valid priority' }),
   }),
   userId: z.string().min(1, 'User ID is required'),
+  dueDate: z.string().optional().nullable(),
 })
 
 export type IssueData = z.infer<typeof IssueSchema>
@@ -66,6 +67,7 @@ export async function createIssue(data: IssueData): Promise<ActionResponse> {
       status: validatedData.status,
       priority: validatedData.priority,
       userId: validatedData.userId,
+      dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
     })
     revalidateTag('issues')
     return { success: true, message: 'Issue created successfully' }
@@ -112,9 +114,12 @@ export const updateIssues = async(id: number, data: Partial<IssueData>) => {
       updateData.status = validatedData.status
     if (validatedData.priority !== undefined)
       updateData.priority = validatedData.priority
-    
+    if (validatedData.dueDate !== undefined)
+      updateData.dueDate = validatedData.dueDate ? new Date(validatedData.dueDate) : null
+
     // Update issue
     await db.update(issues).set(updateData).where(eq(issues.id, id))
+    revalidateTag('issues')
 
     return{
       success: true,
@@ -134,7 +139,6 @@ export const updateIssues = async(id: number, data: Partial<IssueData>) => {
 export async function deleteIssue(id: number) {
   try {
     // Security check - ensure user is authenticated
-    await mockDelay(700)
     const user = await getCurrentUser()
     if (!user) {
       throw new Error('Unauthorized')

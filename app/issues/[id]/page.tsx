@@ -18,7 +18,7 @@ const IssuePage = async(
     if (!issue) {
         notFound()
     }
-    const { title, description, status, priority, createdAt, updatedAt, user } =
+    const { title, description, status, priority, dueDate, createdAt, updatedAt, user } =
     issue
 
   const getStatusLabel = (status: string) => {
@@ -122,6 +122,10 @@ const IssuePage = async(
           <div>
             <p className="text-sm font-medium text-gray-500 mb-1">Created</p>
             <p>{formatRelativeTime(new Date(createdAt))}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 mb-1">Due Date</p>
+            <p>{dueDate ? new Date(dueDate).toLocaleDateString() : <span className="text-gray-400 italic">No due date</span>}</p>
           </div>
         </div>
       </div>

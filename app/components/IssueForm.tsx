@@ -50,6 +50,7 @@ export default function IssueForm({
         | 'done',
       priority: formData.get('priority') as 'low' | 'medium' | 'high',
       userId,
+      dueDate: (formData.get('dueDate') as string) || null,
     }
 
     try {
@@ -140,7 +141,7 @@ export default function IssueForm({
         )}
       </FormGroup>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <FormGroup>
           <FormLabel htmlFor="status">Status</FormLabel>
           <FormSelect
@@ -177,6 +178,17 @@ export default function IssueForm({
               {state.errors.priority[0]}
             </p>
           )}
+        </FormGroup>
+
+        <FormGroup>
+          <FormLabel htmlFor="dueDate">Due Date</FormLabel>
+          <FormInput
+            id="dueDate"
+            name="dueDate"
+            type="date"
+            defaultValue={issue?.dueDate ? new Date(issue.dueDate).toISOString().split('T')[0] : ''}
+            disabled={isPending}
+          />
         </FormGroup>
       </div>
 
