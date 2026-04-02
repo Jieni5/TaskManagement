@@ -1,13 +1,13 @@
-import { getCurrentUser } from "@/lib/dal"
+import { getCurrentUser, getUsers } from "@/lib/dal"
 import { redirect } from "next/navigation"
 import IssueForm from "./IssueForm"
 
 const NewIssue = async () => {
-  const user = await getCurrentUser()
+  const [user, users] = await Promise.all([getCurrentUser(), getUsers()])
   if (!user) {
     redirect('/signin')
   }
-  return <IssueForm userId={user.id} />
+  return <IssueForm userId={user.id} users={users} />
 }
 
 export default NewIssue

@@ -18,6 +18,7 @@ export const issues = pgTable('issues', {
   status: statusEnum('status').default('backlog').notNull(),
   priority: priorityEnum('priority').default('medium').notNull(),
   dueDate: timestamp('due_date'),
+  assigneeId: text('assignee_id'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   userId: text('user_id').notNull(),
@@ -36,11 +37,18 @@ export const issuesRelations = relations(issues, ({ one }) => ({
   user: one(users, {
     fields: [issues.userId],
     references: [users.id],
+    relationName: 'creator',
+  }),
+  assignee: one(users, {
+    fields: [issues.assigneeId],
+    references: [users.id],
+    relationName: 'assignee',
   }),
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({
-  issues: many(issues),
+  issues: many(issues, { relationName: 'creator' }),
+  assignedIssues: many(issues, { relationName: 'assignee' }),
 }))
 
 // Types

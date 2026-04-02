@@ -6,7 +6,6 @@ import { issues, users } from '@/db/schema'
 import { cacheTag, cacheLife } from 'next/cache'
 
 export const getCurrentUser = cache(async () => {
-    console.log("get current user called")
     const session = await getSession()
     if (!session) {
         return null
@@ -44,6 +43,7 @@ export async function getIssues() {
     const result = await db.query.issues.findMany({
       with: {
         user: true,
+        assignee: true,
       },
       orderBy: (issues, { desc }) => [desc(issues.createdAt)],
     })
@@ -56,11 +56,22 @@ export async function getIssues() {
 
 export const getIssue = async(id:number) =>{
   try{
-    const issue = await db.query.issues.findFirst({where: eq(issues.id, id), with:{user:true}})
+    const issue = await db.query.issues.findFirst({
+      where: eq(issues.id, id),
+      with: { user: true, assignee: true },
+    })
     return issue
   }catch(error){
     console.error(error)
     return null
   }
-  
+}
+
+export async function getUsers() {
+  try {
+    return await db.select({ id: users.id, email: users.email }).from(users)
+  } catch (error) {
+    console.error(error)
+    return []
+  }
 }

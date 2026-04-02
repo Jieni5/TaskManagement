@@ -26,6 +26,7 @@ const IssueSchema = z.object({
   }),
   userId: z.string().min(1, 'User ID is required'),
   dueDate: z.string().optional().nullable(),
+  assigneeId: z.string().optional().nullable(),
 })
 
 export type IssueData = z.infer<typeof IssueSchema>
@@ -68,6 +69,7 @@ export async function createIssue(data: IssueData): Promise<ActionResponse> {
       priority: validatedData.priority,
       userId: validatedData.userId,
       dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
+      assigneeId: validatedData.assigneeId || null,
     })
     revalidateTag('issues')
     return { success: true, message: 'Issue created successfully' }
@@ -116,6 +118,8 @@ export const updateIssues = async(id: number, data: Partial<IssueData>) => {
       updateData.priority = validatedData.priority
     if (validatedData.dueDate !== undefined)
       updateData.dueDate = validatedData.dueDate ? new Date(validatedData.dueDate) : null
+    if (validatedData.assigneeId !== undefined)
+      updateData.assigneeId = validatedData.assigneeId || null
 
     // Update issue
     await db.update(issues).set(updateData).where(eq(issues.id, id))

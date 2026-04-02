@@ -18,7 +18,7 @@ const IssuePage = async(
     if (!issue) {
         notFound()
     }
-    const { title, description, status, priority, dueDate, createdAt, updatedAt, user } =
+    const { title, description, status, priority, dueDate, createdAt, updatedAt, user, assignee } =
     issue
 
   const getStatusLabel = (status: string) => {
@@ -104,10 +104,12 @@ const IssuePage = async(
         <h2 className="text-lg font-medium mb-2">Details</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="text-sm font-medium text-gray-500 mb-1">
-              Assigned to
-            </p>
+            <p className="text-sm font-medium text-gray-500 mb-1">Created by</p>
             <p>{user.email}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 mb-1">Assignee</p>
+            <p>{assignee ? assignee.email : <span className="text-gray-400 italic">Unassigned</span>}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500 mb-1">Status</p>

@@ -19,6 +19,7 @@ interface IssueFormProps {
   issue?: Issue
   userId: string
   isEditing?: boolean
+  users?: { id: string; email: string }[]
 }
 
 const initialState: ActionResponse = {
@@ -31,6 +32,7 @@ export default function IssueForm({
   issue,
   userId,
   isEditing = false,
+  users = [],
 }: IssueFormProps) {
   const router = useRouter()
 
@@ -51,6 +53,7 @@ export default function IssueForm({
       priority: formData.get('priority') as 'low' | 'medium' | 'high',
       userId,
       dueDate: (formData.get('dueDate') as string) || null,
+      assigneeId: (formData.get('assigneeId') as string) || null,
     }
 
     try {
@@ -191,6 +194,26 @@ export default function IssueForm({
           />
         </FormGroup>
       </div>
+
+      {users.length > 0 && (
+        <FormGroup>
+          <FormLabel htmlFor="assigneeId">Assignee</FormLabel>
+          <select
+            id="assigneeId"
+            name="assigneeId"
+            defaultValue={issue?.assigneeId ?? ''}
+            disabled={isPending}
+            className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 dark:border-dark-border-medium dark:bg-[#222222] dark:text-gray-100"
+          >
+            <option value="">Unassigned</option>
+            {users.map((u) => (
+              <option key={u.id} value={u.id}>
+                {u.email}
+              </option>
+            ))}
+          </select>
+        </FormGroup>
+      )}
 
       <div className="flex justify-end gap-2 mt-6">
         <Button
