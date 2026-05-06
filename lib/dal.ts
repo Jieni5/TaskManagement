@@ -35,15 +35,15 @@ export const getUserByEmail = async (email: string) => {
     }
 }
 
-export async function getIssues() {
+export async function getIssues(userId: string) {
   'use cache'
-  cacheTag('issues')
+  cacheTag(`issues-${userId}`)
   cacheLife('weeks')
   try {
     const result = await db.query.issues.findMany({
+      where: eq(issues.userId, userId),
       with: {
         user: true,
-        assignee: true,
         project: true,
       },
       orderBy: (issues, { desc }) => [desc(issues.createdAt)],
@@ -59,21 +59,12 @@ export const getIssue = async(id:number) =>{
   try{
     const issue = await db.query.issues.findFirst({
       where: eq(issues.id, id),
-      with: { user: true, assignee: true },
+      with: { user: true },
     })
     return issue
   }catch(error){
     console.error(error)
     return null
-  }
-}
-
-export async function getUsers() {
-  try {
-    return await db.select({ id: users.id, email: users.email }).from(users)
-  } catch (error) {
-    console.error(error)
-    return []
   }
 }
 
@@ -101,9 +92,10 @@ export async function getProject(id: number) {
   }
 }
 
-export async function getAllProjects() {
+export async function getAllProjects(ownerId: string) {
   try {
     return await db.query.projects.findMany({
+      where: eq(projects.ownerId, ownerId),
       with: { owner: true },
       orderBy: (projects, { desc }) => [desc(projects.createdAt)],
     })

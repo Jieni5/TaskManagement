@@ -3,6 +3,7 @@
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Issue, ISSUE_STATUS, ISSUE_PRIORITY, DEPARTMENT, Project } from '@/db/schema'
+// users prop removed — assignee is now a plain text field
 import Button from './ui/Button'
 import {
   Form,
@@ -20,7 +21,6 @@ interface IssueFormProps {
   issue?: Issue
   userId: string
   isEditing?: boolean
-  users?: { id: string; email: string }[]
   projects?: Pick<Project, 'id' | 'name'>[]
   defaultProjectId?: number
 }
@@ -35,7 +35,6 @@ export default function IssueForm({
   issue,
   userId,
   isEditing = false,
-  users = [],
   projects = [],
   defaultProjectId,
 }: IssueFormProps) {
@@ -58,7 +57,7 @@ export default function IssueForm({
       priority: formData.get('priority') as 'low' | 'medium' | 'high',
       userId,
       dueDate: (formData.get('dueDate') as string) || null,
-      assigneeId: (formData.get('assigneeId') as string) || null,
+      assignee: (formData.get('assignee') as string) || null,
       projectId: formData.get('projectId') ? parseInt(formData.get('projectId') as string) : null,
       department: (formData.get('department') as string) || null,
       shootDay: formData.get('shootDay') ? parseInt(formData.get('shootDay') as string) : null,
@@ -202,25 +201,16 @@ export default function IssueForm({
         </FormGroup>
       </div>
 
-      {users.length > 0 && (
-        <FormGroup>
-          <FormLabel htmlFor="assigneeId">Assignee</FormLabel>
-          <select
-            id="assigneeId"
-            name="assigneeId"
-            defaultValue={issue?.assigneeId ?? ''}
-            disabled={isPending}
-            className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-800 focus:border-transparent disabled:cursor-not-allowed disabled:opacity-50 dark:border-dark-border-medium dark:bg-[#222222] dark:text-gray-100"
-          >
-            <option value="">Unassigned</option>
-            {users.map((u) => (
-              <option key={u.id} value={u.id}>
-                {u.email}
-              </option>
-            ))}
-          </select>
-        </FormGroup>
-      )}
+      <FormGroup>
+        <FormLabel htmlFor="assignee">Assignee</FormLabel>
+        <FormInput
+          id="assignee"
+          name="assignee"
+          placeholder="e.g. Jane Smith, Director of Photography"
+          defaultValue={issue?.assignee ?? ''}
+          disabled={isPending}
+        />
+      </FormGroup>
 
       {projects.length > 0 && (
         <FormGroup>

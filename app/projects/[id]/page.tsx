@@ -52,6 +52,7 @@ async function ProjectPageInner({
 
   if (!user) redirect('/signin')
   if (!project) notFound()
+  if (project.ownerId !== user.id) redirect('/dashboard')
 
   const isOwner = user.id === project.ownerId
   const allIssues = project.issues ?? []

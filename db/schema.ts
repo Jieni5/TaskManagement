@@ -49,7 +49,7 @@ export const issues = pgTable('issues', {
   status: statusEnum('status').default('backlog').notNull(),
   priority: priorityEnum('priority').default('medium').notNull(),
   dueDate: timestamp('due_date'),
-  assigneeId: text('assignee_id'),
+  assignee: text('assignee'),
   projectId: integer('project_id'),
   department: departmentEnum('department'),
   shootDay: integer('shoot_day'),
@@ -78,11 +78,6 @@ export const issuesRelations = relations(issues, ({ one }) => ({
     references: [users.id],
     relationName: 'creator',
   }),
-  assignee: one(users, {
-    fields: [issues.assigneeId],
-    references: [users.id],
-    relationName: 'assignee',
-  }),
   project: one(projects, {
     fields: [issues.projectId],
     references: [projects.id],
@@ -91,7 +86,6 @@ export const issuesRelations = relations(issues, ({ one }) => ({
 
 export const usersRelations = relations(users, ({ many }) => ({
   issues: many(issues, { relationName: 'creator' }),
-  assignedIssues: many(issues, { relationName: 'assignee' }),
   projects: many(projects),
 }))
 

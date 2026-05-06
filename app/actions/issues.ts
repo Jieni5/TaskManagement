@@ -26,7 +26,7 @@ const IssueSchema = z.object({
   }),
   userId: z.string().min(1, 'User ID is required'),
   dueDate: z.string().optional().nullable(),
-  assigneeId: z.string().optional().nullable(),
+  assignee: z.string().optional().nullable(),
   projectId: z.number().optional().nullable(),
   department: z.enum(['camera','lighting','sound','art','costume','props','location','vfx','production','direction','general']).optional().nullable(),
   shootDay: z.number().optional().nullable(),
@@ -72,12 +72,12 @@ export async function createIssue(data: IssueData): Promise<ActionResponse> {
       priority: validatedData.priority,
       userId: validatedData.userId,
       dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
-      assigneeId: validatedData.assigneeId || null,
+      assignee: validatedData.assignee || null,
       projectId: validatedData.projectId ?? null,
       department: validatedData.department ?? null,
       shootDay: validatedData.shootDay ?? null,
     })
-    revalidateTag('issues')
+    revalidateTag(`issues-${user.id}`)
     return { success: true, message: 'Issue created successfully' }
   } catch (error) {
     console.error('Error creating issue:', error)
@@ -124,8 +124,8 @@ export const updateIssues = async(id: number, data: Partial<IssueData>) => {
       updateData.priority = validatedData.priority
     if (validatedData.dueDate !== undefined)
       updateData.dueDate = validatedData.dueDate ? new Date(validatedData.dueDate) : null
-    if (validatedData.assigneeId !== undefined)
-      updateData.assigneeId = validatedData.assigneeId || null
+    if (validatedData.assignee !== undefined)
+      updateData.assignee = validatedData.assignee || null
     if (validatedData.projectId !== undefined)
       updateData.projectId = validatedData.projectId ?? null
     if (validatedData.department !== undefined)
@@ -140,7 +140,7 @@ export const updateIssues = async(id: number, data: Partial<IssueData>) => {
     if (result.rowCount === 0) {
       return { success: false, message: 'Not authorized to edit this issue', error: 'Forbidden' }
     }
-    revalidateTag('issues')
+    revalidateTag(`issues-${user.id}`)
 
     return{
       success: true,
@@ -172,7 +172,7 @@ export async function deleteIssue(id: number) {
     if (result.rowCount === 0) {
       return { success: false, message: 'Not authorized to delete this issue', error: 'Forbidden' }
     }
-    revalidateTag('issues')
+    revalidateTag(`issues-${user.id}`)
     return { success: true, message: 'Issue deleted successfully' }
   } catch (error) {
     console.error('Error deleting issue:', error)

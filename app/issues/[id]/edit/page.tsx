@@ -1,7 +1,7 @@
 import { ArrowLeftIcon } from 'lucide-react'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
-import { getCurrentUser, getIssue, getUsers, getAllProjects } from '@/lib/dal'
+import { getCurrentUser, getIssue, getAllProjects } from '@/lib/dal'
 import IssueForm from '@/app/components/IssueForm'
 
 export default async function EditIssuePage({
@@ -10,14 +10,13 @@ export default async function EditIssuePage({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params
-  const [user, issue, users, projects] = await Promise.all([
-    getCurrentUser(),
+  const user = await getCurrentUser()
+  if (!user) redirect('/signin')
+  const [issue, projects] = await Promise.all([
     getIssue(parseInt(id)),
-    getUsers(),
-    getAllProjects(),
+    getAllProjects(user.id),
   ])
 
-  if (!user) redirect('/signin')
   if (!issue) notFound()
 
   return (
@@ -33,7 +32,7 @@ export default async function EditIssuePage({
       <h1 className="text-2xl font-bold mb-6">Edit Issue</h1>
 
       <div className="bg-white dark:bg-dark-elevated border border-gray-200 dark:border-dark-border-default rounded-lg shadow-sm p-6">
-        <IssueForm issue={issue} userId={user.id} isEditing={true} users={users} projects={projects} />
+        <IssueForm issue={issue} userId={user.id} isEditing={true} projects={projects} />
       </div>
     </div>
   )

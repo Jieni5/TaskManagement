@@ -23,8 +23,7 @@ const IssuePage = async(
         notFound()
     }
     const project = issue.projectId ? await getProject(issue.projectId) : null
-    const { title, description, status, priority, dueDate, createdAt, updatedAt, user, assignee, projectId, department, shootDay } =
-    issue
+    const { title, description, status, priority, dueDate, createdAt, updatedAt, user, assignee, projectId, department, shootDay } = issue
     const isOwner = currentUser?.id === issue.userId
 
   const getStatusLabel = (status: string) => {
@@ -117,7 +116,7 @@ const IssuePage = async(
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500 mb-1">Assignee</p>
-            <p>{assignee ? assignee.email : <span className="text-gray-400 italic">Unassigned</span>}</p>
+            <p>{assignee ?? <span className="text-gray-400 italic">Unassigned</span>}</p>
           </div>
           <div>
             <p className="text-sm font-medium text-gray-500 mb-1">Status</p>

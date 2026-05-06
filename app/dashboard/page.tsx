@@ -1,6 +1,6 @@
 import { getCurrentUser, getAllProjects } from '@/lib/dal'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { PlusIcon, ClapperboardIcon } from 'lucide-react'
 import Button from '../components/ui/Button'
 import { PRODUCTION_PHASE } from '@/db/schema'
@@ -15,7 +15,7 @@ export default async function DashboardPage() {
   const user = await getCurrentUser()
   if (!user) redirect('/signin')
 
-  const projects = await getAllProjects()
+  const projects = await getAllProjects(user.id)
 
   return (
     <div>
