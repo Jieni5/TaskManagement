@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { getCurrentUser, getProject } from '@/lib/dal'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
