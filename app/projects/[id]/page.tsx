@@ -1,5 +1,3 @@
-export const dynamic = 'force-dynamic'
-
 import { getCurrentUser, getProject } from '@/lib/dal'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
@@ -25,12 +23,28 @@ type SortField = 'title' | 'status' | 'priority' | 'dueDate' | 'createdAt'
 const PRIORITY_ORDER = { low: 0, medium: 1, high: 2 }
 const STATUS_ORDER = { backlog: 0, todo: 1, in_progress: 2, done: 3 }
 
-export default async function ProjectPage({
+type SearchParams = Promise<{ search?: string; status?: string; priority?: string; sort?: string; order?: string }>
+
+export default function ProjectPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ search?: string; status?: string; priority?: string; sort?: string; order?: string }>
+  searchParams: SearchParams
+}) {
+  return (
+    <Suspense fallback={null}>
+      <ProjectPageInner params={params} searchParams={searchParams} />
+    </Suspense>
+  )
+}
+
+async function ProjectPageInner({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: SearchParams
 }) {
   const { id } = await params
   const sp = await searchParams
@@ -42,7 +56,6 @@ export default async function ProjectPage({
   const isOwner = user.id === project.ownerId
   const allIssues = project.issues ?? []
 
-  // Filter & sort
   const search = sp.search ?? ''
   const status = sp.status ?? ''
   const priority = sp.priority ?? ''
@@ -73,7 +86,6 @@ export default async function ProjectPage({
 
   return (
     <div className="max-w-5xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
         <Link
           href="/dashboard"
@@ -109,7 +121,6 @@ export default async function ProjectPage({
         </div>
       </div>
 
-      {/* Details card */}
       <div className="bg-white dark:bg-dark-elevated border border-gray-200 dark:border-dark-border-default rounded-lg shadow-sm p-6 mb-6">
         {project.description && (
           <p className="text-gray-600 dark:text-gray-300 mb-4">{project.description}</p>
@@ -130,7 +141,6 @@ export default async function ProjectPage({
         </div>
       </div>
 
-      {/* Tasks */}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">Tasks ({allIssues.length})</h2>
         <Link href={`/issues/new?projectId=${id}`}>
