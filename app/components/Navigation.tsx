@@ -12,8 +12,8 @@ export default function Navigation() {
           href="/"
           className="text-xl font-bold tracking-tight text-gray-900 dark:text-white"
         >
-          <span className="hidden md:inline">Mode</span>
-          <span className="md:hidden">M</span>
+          <span className="hidden md:inline">Callsheet</span>
+          <span className="md:hidden">CS</span>
         </Link>
       </div>
 
@@ -26,7 +26,7 @@ export default function Navigation() {
         <NavLink
           href="/issues/new"
           icon={<PlusIcon size={20} />}
-          label="New Issue"
+          label="New Task"
         />
       </nav>
 

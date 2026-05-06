@@ -1,6 +1,7 @@
-import { getIssue } from '@/lib/dal'
+import { getIssue, getCurrentUser, getProject } from '@/lib/dal'
 import { formatRelativeTime } from '@/lib/utils'
 import { Priority, Status } from '@/lib/types'
+import { DEPARTMENT } from '@/db/schema'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import Badge from '@/app/components/ui/Badge'
@@ -13,13 +14,18 @@ const IssuePage = async(
 }) =>{
 
     const {id} = await params
-    const issue = await getIssue(parseInt(id))
+    const [issue, currentUser] = await Promise.all([
+      getIssue(parseInt(id)),
+      getCurrentUser(),
+    ])
 
     if (!issue) {
         notFound()
     }
-    const { title, description, status, priority, dueDate, createdAt, updatedAt, user, assignee } =
+    const project = issue.projectId ? await getProject(issue.projectId) : null
+    const { title, description, status, priority, dueDate, createdAt, updatedAt, user, assignee, projectId, department, shootDay } =
     issue
+    const isOwner = currentUser?.id === issue.userId
 
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -61,17 +67,19 @@ const IssuePage = async(
         </Link>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <h1 className="text-3xl font-bold">{title}</h1>
-          <div className="flex items-center space-x-2">
-            <Link href={`/issues/${id}/edit`}>
-              <Button variant="outline" size="sm">
-                <span className="flex items-center">
-                  <Edit2Icon size={16} className="mr-1" />
-                  Edit
-                </span>
-              </Button>
-            </Link>
-            <DeleteIssueButton id={parseInt(id)} />
-          </div>
+          {isOwner && (
+            <div className="flex items-center space-x-2">
+              <Link href={`/issues/${id}/edit`}>
+                <Button variant="outline" size="sm">
+                  <span className="flex items-center">
+                    <Edit2Icon size={16} className="mr-1" />
+                    Edit
+                  </span>
+                </Button>
+              </Link>
+              <DeleteIssueButton id={parseInt(id)} />
+            </div>
+          )}
         </div>
       </div>
 
@@ -128,6 +136,24 @@ const IssuePage = async(
           <div>
             <p className="text-sm font-medium text-gray-500 mb-1">Due Date</p>
             <p>{dueDate ? new Date(dueDate).toLocaleDateString() : <span className="text-gray-400 italic">No due date</span>}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 mb-1">Project</p>
+            {project ? (
+              <Link href={`/projects/${project.id}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                {project.name}
+              </Link>
+            ) : (
+              <span className="text-gray-400 italic">No project</span>
+            )}
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 mb-1">Department</p>
+            <p>{department ? DEPARTMENT[department].label : <span className="text-gray-400 italic">None</span>}</p>
+          </div>
+          <div>
+            <p className="text-sm font-medium text-gray-500 mb-1">Shoot Day</p>
+            <p>{shootDay != null ? `Day ${shootDay}` : <span className="text-gray-400 italic">None</span>}</p>
           </div>
         </div>
       </div>

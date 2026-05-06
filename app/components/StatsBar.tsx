@@ -14,7 +14,7 @@ export default function StatsBar({ issues }: StatsBarProps) {
   const stats = [
     { label: 'Total', count: total, className: 'text-gray-700 dark:text-gray-200' },
     { label: 'Backlog', count: backlog, className: 'text-gray-500 dark:text-gray-400' },
-    { label: 'Todo', count: todo, className: 'text-purple-600 dark:text-purple-400' },
+    { label: 'Todo', count: todo, className: 'text-amber-600 dark:text-amber-400' },
     { label: 'In Progress', count: inProgress, className: 'text-yellow-600 dark:text-yellow-400' },
     { label: 'Done', count: done, className: 'text-green-600 dark:text-green-400' },
   ]

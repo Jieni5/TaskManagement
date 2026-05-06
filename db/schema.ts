@@ -1,5 +1,5 @@
 import { InferSelectModel, relations } from 'drizzle-orm'
-import { pgTable, serial, text, timestamp, pgEnum } from 'drizzle-orm/pg-core'
+import { pgTable, serial, text, timestamp, pgEnum, integer } from 'drizzle-orm/pg-core'
 
 // Enums for issue status and priority
 export const statusEnum = pgEnum('status', [
@@ -9,6 +9,37 @@ export const statusEnum = pgEnum('status', [
   'done',
 ])
 export const priorityEnum = pgEnum('priority', ['low', 'medium', 'high'])
+export const productionPhaseEnum = pgEnum('production_phase', [
+  'pre_production',
+  'production',
+  'post_production',
+])
+export const departmentEnum = pgEnum('department', [
+  'camera',
+  'lighting',
+  'sound',
+  'art',
+  'costume',
+  'props',
+  'location',
+  'vfx',
+  'production',
+  'direction',
+  'general',
+])
+
+// Projects table
+export const projects = pgTable('projects', {
+  id: serial('id').primaryKey(),
+  name: text('name').notNull(),
+  description: text('description'),
+  phase: productionPhaseEnum('phase').default('pre_production').notNull(),
+  startDate: timestamp('start_date'),
+  endDate: timestamp('end_date'),
+  ownerId: text('owner_id').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
 
 // Issues table
 export const issues = pgTable('issues', {
@@ -19,6 +50,9 @@ export const issues = pgTable('issues', {
   priority: priorityEnum('priority').default('medium').notNull(),
   dueDate: timestamp('due_date'),
   assigneeId: text('assignee_id'),
+  projectId: integer('project_id'),
+  department: departmentEnum('department'),
+  shootDay: integer('shoot_day'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
   userId: text('user_id').notNull(),
@@ -32,7 +66,12 @@ export const users = pgTable('users', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
-// Relations between tables
+// Relations
+export const projectsRelations = relations(projects, ({ one, many }) => ({
+  owner: one(users, { fields: [projects.ownerId], references: [users.id] }),
+  issues: many(issues),
+}))
+
 export const issuesRelations = relations(issues, ({ one }) => ({
   user: one(users, {
     fields: [issues.userId],
@@ -44,16 +83,22 @@ export const issuesRelations = relations(issues, ({ one }) => ({
     references: [users.id],
     relationName: 'assignee',
   }),
+  project: one(projects, {
+    fields: [issues.projectId],
+    references: [projects.id],
+  }),
 }))
 
 export const usersRelations = relations(users, ({ many }) => ({
   issues: many(issues, { relationName: 'creator' }),
   assignedIssues: many(issues, { relationName: 'assignee' }),
+  projects: many(projects),
 }))
 
 // Types
 export type Issue = InferSelectModel<typeof issues>
 export type User = InferSelectModel<typeof users>
+export type Project = InferSelectModel<typeof projects>
 
 // Status and priority labels for display
 export const ISSUE_STATUS = {
@@ -67,4 +112,24 @@ export const ISSUE_PRIORITY = {
   low: { label: 'Low', value: 'low' },
   medium: { label: 'Medium', value: 'medium' },
   high: { label: 'High', value: 'high' },
+}
+
+export const PRODUCTION_PHASE = {
+  pre_production: { label: 'Pre-Production', value: 'pre_production' },
+  production: { label: 'Production', value: 'production' },
+  post_production: { label: 'Post-Production', value: 'post_production' },
+}
+
+export const DEPARTMENT = {
+  camera: { label: 'Camera', value: 'camera' },
+  lighting: { label: 'Lighting', value: 'lighting' },
+  sound: { label: 'Sound', value: 'sound' },
+  art: { label: 'Art', value: 'art' },
+  costume: { label: 'Costume', value: 'costume' },
+  props: { label: 'Props', value: 'props' },
+  location: { label: 'Location', value: 'location' },
+  vfx: { label: 'VFX', value: 'vfx' },
+  production: { label: 'Production', value: 'production' },
+  direction: { label: 'Direction', value: 'direction' },
+  general: { label: 'General', value: 'general' },
 }

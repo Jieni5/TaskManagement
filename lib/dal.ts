@@ -2,7 +2,7 @@ import { db } from '@/db'
 import { getSession } from './auth'
 import { eq } from 'drizzle-orm'
 import { cache } from 'react'
-import { issues, users } from '@/db/schema'
+import { issues, users, projects } from '@/db/schema'
 import { cacheTag, cacheLife } from 'next/cache'
 
 export const getCurrentUser = cache(async () => {
@@ -44,6 +44,7 @@ export async function getIssues() {
       with: {
         user: true,
         assignee: true,
+        project: true,
       },
       orderBy: (issues, { desc }) => [desc(issues.createdAt)],
     })
@@ -70,6 +71,42 @@ export const getIssue = async(id:number) =>{
 export async function getUsers() {
   try {
     return await db.select({ id: users.id, email: users.email }).from(users)
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+export async function getProjects(ownerId: string) {
+  try {
+    return await db.query.projects.findMany({
+      where: eq(projects.ownerId, ownerId),
+      orderBy: (projects, { desc }) => [desc(projects.createdAt)],
+    })
+  } catch (error) {
+    console.error(error)
+    return []
+  }
+}
+
+export async function getProject(id: number) {
+  try {
+    return await db.query.projects.findFirst({
+      where: eq(projects.id, id),
+      with: { owner: true, issues: true },
+    })
+  } catch (error) {
+    console.error(error)
+    return null
+  }
+}
+
+export async function getAllProjects() {
+  try {
+    return await db.query.projects.findMany({
+      with: { owner: true },
+      orderBy: (projects, { desc }) => [desc(projects.createdAt)],
+    })
   } catch (error) {
     console.error(error)
     return []

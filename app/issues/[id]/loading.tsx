@@ -1,5 +1,5 @@
-const IssueLoader = () =>{
-    return <div>Loading issue...</div>
-}
+import IssueSkeleton from '@/app/components/IssueSkeleton'
 
-export default IssueLoader
+export default function IssueLoading() {
+  return <IssueSkeleton />
+}

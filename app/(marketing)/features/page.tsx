@@ -1,114 +1,54 @@
 import React from 'react'
-import Link from 'next/link'
 import { CheckCircle2 } from 'lucide-react'
 
 export default function FeaturesPage() {
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-3xl mx-auto text-center mb-16">
-        <h1 className="text-4xl font-bold mb-4 text-white">Features</h1>
-        <p className="text-xl text-gray-400">
-          Discover how Linear Clone can help you manage your projects more
-          efficiently.
+        <h1 className="text-4xl font-bold mb-4">Features</h1>
+        <p className="text-xl text-gray-500 dark:text-gray-400">
+          Everything your production needs, from first day of prep to picture lock.
         </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
         <FeatureCard
-          title="Issue Tracking"
-          description="Create, assign, and track issues with ease. Set priorities, due dates, and statuses to keep your team on track."
+          title="Production Phases"
+          description="Organize your project across pre-production, production, and post. Track what phase each task belongs to."
         />
         <FeatureCard
-          title="Intuitive UI"
-          description="A clean, modern interface that makes project management a breeze. No clutter, just what you need to get work done."
+          title="Department Tasks"
+          description="Assign tasks to Camera, Sound, Art, Costume, Grip, and more. Every department stays on the same page."
         />
         <FeatureCard
-          title="Collaboration"
-          description="Work together seamlessly. Comment on issues, mention team members, and keep everyone in the loop."
+          title="Shoot Day Planning"
+          description="Tag tasks to specific shoot days. Filter your dashboard to see exactly what's needed on any given day."
         />
         <FeatureCard
-          title="Custom Workflows"
-          description="Create workflows that match your team's process. Customize statuses, labels, and more."
+          title="Crew Assignment"
+          description="Assign tasks to specific crew members. Everyone knows what they're responsible for."
         />
         <FeatureCard
-          title="Real-time Updates"
-          description="See changes as they happen. No need to refresh or wait for updates."
+          title="Project Overview"
+          description="See all tasks linked to a project at a glance. Track start dates, end dates, and overall progress."
         />
         <FeatureCard
-          title="Powerful Search"
-          description="Find anything instantly with our powerful search. Filter by assignee, status, priority, and more."
+          title="Search & Filter"
+          description="Find any task instantly. Filter by status, priority, department, or search by title."
         />
       </div>
     </div>
   )
 }
 
-function FeatureCard({
-  title,
-  description,
-}: {
-  title: string
-  description: string
-}) {
+function FeatureCard({ title, description }: { title: string; description: string }) {
   return (
-    <div className="bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-700">
-      <h3 className="text-xl font-semibold mb-2 text-white">{title}</h3>
-      <p className="text-gray-400">{description}</p>
-    </div>
-  )
-}
-
-interface PlanCardProps {
-  title: string
-  price: string
-  description: string
-  features: string[]
-  buttonText: string
-  buttonLink: string
-  highlighted?: boolean
-}
-
-function PlanCard({
-  title,
-  price,
-  description,
-  features,
-  buttonText,
-  buttonLink,
-  highlighted = false,
-}: PlanCardProps) {
-  return (
-    <div
-      className={`rounded-lg p-6 ${
-        highlighted
-          ? 'bg-purple-900 border-2 border-purple-700 shadow-md'
-          : 'bg-gray-800 border border-gray-700 shadow-sm'
-      }`}
-    >
-      <h3 className="text-xl font-bold mb-2 text-white">{title}</h3>
-      <div className="mb-4">
-        <span className="text-3xl font-bold text-white">{price}</span>
-        {price !== 'Custom' && <span className="text-gray-400">/month</span>}
+    <div className="bg-white dark:bg-dark-elevated p-6 rounded-lg shadow-sm border border-gray-200 dark:border-dark-border-default">
+      <div className="w-8 h-8 bg-amber-100 dark:bg-amber-900 rounded-full flex items-center justify-center mb-4">
+        <CheckCircle2 className="h-5 w-5 text-amber-600 dark:text-amber-400" />
       </div>
-      <p className="text-gray-400 mb-6">{description}</p>
-      <ul className="space-y-3 mb-6">
-        {features.map((feature, index) => (
-          <li key={index} className="flex items-start text-gray-400">
-            <CheckCircle2 className="h-5 w-5 text-green-500 mr-2 flex-shrink-0" />
-            <span>{feature}</span>
-          </li>
-        ))}
-      </ul>
-      <Link
-        href={buttonLink}
-        className={`w-full inline-flex h-10 items-center justify-center rounded-md px-8 py-2 text-sm font-medium shadow transition-colors ${
-          highlighted
-            ? 'bg-purple-600 text-white hover:bg-purple-700'
-            : 'bg-gray-800 border border-gray-700 hover:bg-gray-700 text-white'
-        }`}
-      >
-        {buttonText}
-      </Link>
+      <h3 className="text-lg font-semibold mb-2 text-gray-900 dark:text-white">{title}</h3>
+      <p className="text-gray-500 dark:text-gray-400 text-sm">{description}</p>
     </div>
   )
 }

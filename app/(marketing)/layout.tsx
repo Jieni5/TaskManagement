@@ -13,24 +13,24 @@ export default async function MarketingLayout({
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <div className="flex items-center gap-8">
             <Link href="/" className="text-xl font-bold">
-              Mode
+              Callsheet
             </Link>
             <nav className="hidden md:flex gap-6">
               <Link
                 href="/features"
-                className="text-sm font-medium hover:text-purple-600"
+                className="text-sm font-medium hover:text-amber-500"
               >
                 Features
               </Link>
               <Link
                 href="/pricing"
-                className="text-sm font-medium hover:text-purple-600"
+                className="text-sm font-medium hover:text-amber-500"
               >
                 Pricing
               </Link>
               <Link
                 href="/faq"
-                className="text-sm font-medium hover:text-purple-600"
+                className="text-sm font-medium hover:text-amber-500"
               >
                 FAQ
               </Link>
@@ -55,9 +55,9 @@ export default async function MarketingLayout({
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Mode</h3>
+              <h3 className="text-lg font-semibold mb-4">Callsheet</h3>
               <p className="text-sm text-gray-600">
-                A modern project management tool built with Next.js.
+                Film production logistics and task management.
               </p>
             </div>
             <div>
@@ -66,7 +66,7 @@ export default async function MarketingLayout({
                 <li>
                   <Link
                     href="/features"
-                    className="text-sm text-gray-600 hover:text-purple-600"
+                    className="text-sm text-gray-600 hover:text-amber-500"
                   >
                     Features
                   </Link>
@@ -74,7 +74,7 @@ export default async function MarketingLayout({
                 <li>
                   <Link
                     href="/pricing"
-                    className="text-sm text-gray-600 hover:text-purple-600"
+                    className="text-sm text-gray-600 hover:text-amber-500"
                   >
                     Pricing
                   </Link>
@@ -82,7 +82,7 @@ export default async function MarketingLayout({
                 <li>
                   <Link
                     href="/faq"
-                    className="text-sm text-gray-600 hover:text-purple-600"
+                    className="text-sm text-gray-600 hover:text-amber-500"
                   >
                     FAQ
                   </Link>
@@ -95,7 +95,7 @@ export default async function MarketingLayout({
                 <li>
                   <Link
                     href="/docs"
-                    className="text-sm text-gray-600 hover:text-purple-600"
+                    className="text-sm text-gray-600 hover:text-amber-500"
                   >
                     Documentation
                   </Link>
@@ -105,7 +105,7 @@ export default async function MarketingLayout({
                     href="https://github.com/yourusername/mode"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm text-gray-600 hover:text-purple-600"
+                    className="text-sm text-gray-600 hover:text-amber-500"
                   >
                     GitHub
                   </a>
@@ -118,7 +118,7 @@ export default async function MarketingLayout({
                 <li>
                   <Link
                     href="/terms"
-                    className="text-sm text-gray-600 hover:text-purple-600"
+                    className="text-sm text-gray-600 hover:text-amber-500"
                   >
                     Terms of Service
                   </Link>
@@ -128,7 +128,7 @@ export default async function MarketingLayout({
           </div>
           <div className="mt-8 border-t pt-8 text-center">
             <p className="text-sm text-gray-600">
-              &copy; <Timestamp /> Mode. All rights reserved.
+              &copy; <Timestamp /> Callsheet. All rights reserved.
             </p>
           </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { db } from '@/db'
 import { issues } from '@/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, and } from 'drizzle-orm'
 import { getCurrentUser } from '@/lib/dal'
 import { z } from 'zod'
 
@@ -27,6 +27,9 @@ const IssueSchema = z.object({
   userId: z.string().min(1, 'User ID is required'),
   dueDate: z.string().optional().nullable(),
   assigneeId: z.string().optional().nullable(),
+  projectId: z.number().optional().nullable(),
+  department: z.enum(['camera','lighting','sound','art','costume','props','location','vfx','production','direction','general']).optional().nullable(),
+  shootDay: z.number().optional().nullable(),
 })
 
 export type IssueData = z.infer<typeof IssueSchema>
@@ -70,6 +73,9 @@ export async function createIssue(data: IssueData): Promise<ActionResponse> {
       userId: validatedData.userId,
       dueDate: validatedData.dueDate ? new Date(validatedData.dueDate) : null,
       assigneeId: validatedData.assigneeId || null,
+      projectId: validatedData.projectId ?? null,
+      department: validatedData.department ?? null,
+      shootDay: validatedData.shootDay ?? null,
     })
     revalidateTag('issues')
     return { success: true, message: 'Issue created successfully' }
@@ -120,9 +126,20 @@ export const updateIssues = async(id: number, data: Partial<IssueData>) => {
       updateData.dueDate = validatedData.dueDate ? new Date(validatedData.dueDate) : null
     if (validatedData.assigneeId !== undefined)
       updateData.assigneeId = validatedData.assigneeId || null
+    if (validatedData.projectId !== undefined)
+      updateData.projectId = validatedData.projectId ?? null
+    if (validatedData.department !== undefined)
+      updateData.department = validatedData.department ?? null
+    if (validatedData.shootDay !== undefined)
+      updateData.shootDay = validatedData.shootDay ?? null
 
-    // Update issue
-    await db.update(issues).set(updateData).where(eq(issues.id, id))
+    // Update issue — only if the current user is the creator
+    const result = await db.update(issues).set(updateData).where(
+      and(eq(issues.id, id), eq(issues.userId, user.id))
+    )
+    if (result.rowCount === 0) {
+      return { success: false, message: 'Not authorized to edit this issue', error: 'Forbidden' }
+    }
     revalidateTag('issues')
 
     return{
@@ -148,8 +165,13 @@ export async function deleteIssue(id: number) {
       throw new Error('Unauthorized')
     }
  
-    // Delete issue
-    await db.delete(issues).where(eq(issues.id, id))
+    // Delete issue — only if the current user is the creator
+    const result = await db.delete(issues).where(
+      and(eq(issues.id, id), eq(issues.userId, user.id))
+    )
+    if (result.rowCount === 0) {
+      return { success: false, message: 'Not authorized to delete this issue', error: 'Forbidden' }
+    }
     revalidateTag('issues')
     return { success: true, message: 'Issue deleted successfully' }
   } catch (error) {

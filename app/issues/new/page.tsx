@@ -3,22 +3,26 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import NewIssue from '@/app/components/NewIssue'
 
-export default async function NewIssuePage() {
+export default async function NewIssuePage({ searchParams }: { searchParams: Promise<{ projectId?: string }> }) {
+  const { projectId } = await searchParams
+  const parsedProjectId = projectId ? parseInt(projectId) : undefined
+  const backHref = projectId ? `/projects/${projectId}` : '/dashboard'
+
   return (
     <div className="max-w-3xl mx-auto p-4 md:p-8">
       <Link
-        href="/dashboard"
+        href={backHref}
         className="inline-flex items-center text-sm text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200 mb-6"
       >
         <ArrowLeftIcon size={16} className="mr-1" />
-        Back to Dashboard
+        {projectId ? 'Back to Project' : 'Back to Dashboard'}
       </Link>
 
-      <h1 className="text-2xl font-bold mb-6">Create New Issue</h1>
+      <h1 className="text-2xl font-bold mb-6">Create New Task</h1>
 
       <div className="bg-white dark:bg-dark-elevated border border-gray-200 dark:border-dark-border-default rounded-lg shadow-sm p-6">
         <Suspense fallback={<div>Loading...</div>}>
-          <NewIssue />
+          <NewIssue projectId={parsedProjectId} />
         </Suspense>
       </div>
     </div>
